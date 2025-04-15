@@ -2,11 +2,10 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package*.json angular.json tsconfig.json ./
-RUN npm install && \
-    npm install -g @angular/cli
+RUN npm install
 
 COPY . .
-RUN ng build --configuration=production
+RUN npm run build
 
 FROM nginx:1.27.4-alpine
 RUN apk add --no-cache curl
