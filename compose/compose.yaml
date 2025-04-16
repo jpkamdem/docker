@@ -1,9 +1,11 @@
 services:
   db:
-    container_name: postgres
+    container_name: app-name_postgres-db
     image: postgres:16
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - app-network
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USER}
@@ -16,27 +18,25 @@ services:
       start_period: 30s
       timeout: 10s
     volumes:
-      - db:/var/lib/postgresql/data
+      - app-name_postgres-db:/var/lib/postgresql/data
+  db-manager:
+    container_name: app-name_pgadmin
+    image: dpage/pgadmin4:9.2.0
+    ports:
+      - "5050:80"
     networks:
       - app-network
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4:9.2.0
     environment:
       PGADMIN_DEFAULT_EMAIL: rootemail@gmail.com
       PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - "5050:80"
     depends_on:
       - db
     volumes:
-      - pgadmin:/var/lib/pgadmin
-    networks:
-      - app-network
+      - app-name_pgadmin:/var/lib/pgadmin
 
 volumes:
-  db:
-  pgadmin:
+  app-name_postgres-db:
+  app-name_pgadmin:
 networks:
   app-network:
     driver: bridge
