@@ -27,8 +27,8 @@ services:
     networks:
       - app-network
     environment:
-      PGADMIN_DEFAULT_EMAIL: rootemail@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     depends_on:
       - db
     volumes:
