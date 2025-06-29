@@ -2,18 +2,18 @@ name: app-name
 
 services:
   postgres:
-    image: postgres:16
+    image: postgres:17.5-alpine
     ports:
       - "${DB_PORT}:${DB_PORT}"
     networks:
       - network
     environment:
       POSTGRES_DB: ${DB_DATABASE}
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       DATABASE_URL: ${DATABASE_URL}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
       interval: 10s
       retries: 5
       start_period: 30s
@@ -21,7 +21,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
   pgadmin:
-    image: dpage/pgadmin4:9.2.0
+    image: dpage/pgadmin4:2025-06-27-1
     ports:
       - "5050:80"
     networks:
@@ -32,7 +32,7 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - db
+      - postgres
 
 volumes:
   db_data:
