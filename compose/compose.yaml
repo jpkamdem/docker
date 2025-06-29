@@ -1,4 +1,4 @@
-name: app-name
+name: ${APP_NAME}
 
 services:
   postgres:
