@@ -1,11 +1,18 @@
-FROM maven:3.8.8 AS build
+FROM maven:amazoncorretto AS build
 WORKDIR /app
-COPY pom.xml .
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-FROM openjdk:21-jdk
+FROM openjdk:26-jdk-slim-bookworm AS runtime
+# pour le healthcheck, prépare un controller GET /health
+RUN apt-get -y update; apt-get -y install curl
 WORKDIR /app
-COPY --from=build /app/target/mmiplatform.jar /app/mmiplatform.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/mmiplatform.jar"]
+
+# server = le nom de l'application spring
+COPY --from=build /app/target/server-0.0.1-SNAPSHOT.jar server-0.0.1-SNAPSHOT.jar
+
+# le port dans server.port
+EXPOSE 7700
+CMD ["java", "-jar", "server-0.0.1-SNAPSHOT.jar"]
