@@ -1,0 +1,42 @@
+name: myapp
+services:
+  web:
+    image: myapp/webapp:1.0
+    build:
+      context: ./
+      dockerfile: Containerfile-web
+    networks:
+      - private
+      - public
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:4000"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  nginx:
+    image: myapp/nginx:1.0
+    build:
+      context: ./
+      dockerfile: Containerfile-nginx
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8080"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    ports:
+      - name: nginx
+        host_ip: 127.0.0.1
+        published: 8080
+        target: 8080
+    depends_on:
+      web:
+        condition: service_healthy
+networks:
+  private:
+    internal: true
+  public:
