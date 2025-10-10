@@ -6,13 +6,9 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 FROM openjdk:26-jdk-slim-bookworm AS runtime
-# pour le healthcheck, prépare un controller GET /health
+# GET /health curl -f http://127.0.0.1:port/health
 RUN apt-get -y update; apt-get -y install curl
 WORKDIR /app
-
-# server = le nom de l'application spring
-COPY --from=build /app/target/server-0.0.1-SNAPSHOT.jar server-0.0.1-SNAPSHOT.jar
-
-# le port dans server.port
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 7700
-CMD ["java", "-jar", "server-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "app.jar"]

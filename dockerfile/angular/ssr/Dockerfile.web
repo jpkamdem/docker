@@ -8,7 +8,7 @@ RUN npm run build
 FROM node:24-alpine AS runtime
 WORKDIR /app
 RUN apk add --no-cache curl
-# webapp= nom de l'application angular
+# webapp = nom de l'application angular
 COPY --from=build /app/dist/webapp ./
 EXPOSE 4000
 CMD [ "node", "server/server.mjs" ]
