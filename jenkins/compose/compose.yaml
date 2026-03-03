@@ -1,0 +1,55 @@
+services:
+  jenkins-docker:
+    container_name: jenkins-docker
+    image: docker:29.2-dind
+    ports:
+      - host_ip: 127.0.0.1
+        published: 2376
+        target: 2376
+        protocol: tcp
+        app_protocol: http
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+    restart: on-failure
+    privileged: true
+    command: --storage-driver=overlay2
+    networks:
+      jenkins:
+        aliases:
+          - docker
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
+
+  jenkins-bluocean:
+    container_name: jenkins-bluocean
+    image: myjenkins-blueocean:2.541.2-1
+    ports:
+      - host_ip: 127.0.0.1
+        published: 8080
+        target: 8080
+        protocol: tcp
+        app_protocol: http
+      - host_ip: 127.0.0.1
+        published: 5000
+        target: 5000
+        protocol: tcp
+        app_protocol: http
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: 1
+    restart: on-failure
+    networks:
+      - jenkins
+    volumes:
+      - jenkins-docker-certs:/certs/client:ro
+      - jenkins-data:/var/jenkins_home
+
+volumes:
+  jenkins-data:
+  jenkins-docker-certs:
+
+networks:
+  jenkins:
+    driver: bridge
