@@ -15,7 +15,7 @@ RUN npm ci --omit=dev
 
 FROM base AS build
 WORKDIR /app
-COPY --from=deps /app/node_modules ./
+COPY --from=deps /app/node_modules/ ./node_modules
 COPY . ./
 RUN npm run build
 
