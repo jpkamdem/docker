@@ -1,4 +1,5 @@
 FROM nginx:stable-trixie AS nginx
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 COPY nginx.conf /etc/nginx/nginx.conf
 
 FROM node:iron-bookworm-slim AS base
